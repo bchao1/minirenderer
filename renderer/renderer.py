@@ -1,9 +1,9 @@
 import numpy as np 
 
-from canvas import WireframeCanvas
-from parser import WireframeParser
-import geometry
-import colors
+from .canvas import WireframeCanvas
+from .parser import WireframeParser
+from . import geometry
+from . import colors
 
 class WireframeRenderer:
     def __init__(self,
@@ -40,7 +40,7 @@ class WireframeRenderer:
 
         self.adjust_camera(camera, center, up)
         self.scale = self.get_scale(self.parser.x_range, self.parser.y_range)
-        self.canvas_size = (1000, 1000)#self.parser.get_canvas_size(self.scale)
+        self.canvas_size = self.parser.get_canvas_size(self.scale)
         self.canvas = WireframeCanvas(self.canvas_size, self.fg_color, self.bg_color)
         
         light_dir = np.array([0, 0, 1]) # light direction, into the frame
@@ -58,30 +58,5 @@ class WireframeRenderer:
             elif mode == 'triangle':
                 self.canvas.drawpoly(f_canvas, fill=colors.color_grad(colors.WHITE, I))
         
-        self.canvas.verticalFlip()
+        self.canvas.postprocess()
         return self.canvas
-
-
-if __name__ == '__main__':
-    mode = 'triangle'
-    obj = 'bunny'
-    inpath = '../examples/{}.obj'.format(obj)
-    outpath = '../images/{}_{}.png'.format(obj, mode)
-    wf = WireframeRenderer()
-    wf.readfile(inpath)
-
-    im_list = []
-    for i in range(72):
-        r = 100
-        theta = 5 * i
-        rad = np.pi * theta / 180
-        camera = [r * np.cos(rad), 0, r * np.sin(rad)]
-        center = [0, 0, 0]
-        up = [0, 1, 0]
-
-        canvas = wf.render(mode, camera, center, up)
-        im_list.append(canvas.img)
-
-    im_list[0].save('render.gif', save_all=True, append_images=im_list[1:], duration=100, loop=0)
-
-

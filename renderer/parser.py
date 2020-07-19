@@ -1,6 +1,6 @@
 import math
 import numpy as np
-import geometry
+from . import geometry
 
 class WireframeParser:
     def __init__(self):

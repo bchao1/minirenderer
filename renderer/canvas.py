@@ -16,8 +16,9 @@ class WireframeCanvas:
     def drawpoly(self, coors, outline=None, fill=None):
         self.draw.polygon(coors, outline=outline, fill=fill)
     
-    def verticalFlip(self):
+    def postprocess(self):
         self.img = ImageOps.flip(self.img)
+        self.img = ImageOps.expand(self.img, border=10, fill=self.bg_color)
 
     def show(self):
         self.img.show()
