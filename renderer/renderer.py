@@ -32,12 +32,18 @@ class WireframeRenderer:
     def readfile(self, infile):
         self.parser.readfile(infile)
 
-    def render(self, mode, outfile):
+    def adjust_camera(self, camera, center, up):
+        self.parser.adjust_camera(camera, center, up)
+
+    def render(self, mode, camera, center, up):
+        # compute camera coordinates
+
+        self.adjust_camera(camera, center, up)
         self.scale = self.get_scale(self.parser.x_range, self.parser.y_range)
-        self.imsize = self.parser.get_imsize(self.scale)
-        self.canvas = WireframeCanvas(self.imsize, self.fg_color, self.bg_color)
+        self.canvas_size = (1000, 1000)#self.parser.get_canvas_size(self.scale)
+        self.canvas = WireframeCanvas(self.canvas_size, self.fg_color, self.bg_color)
         
-        light_dir = np.array([0, 0, 1]) # light direction
+        light_dir = np.array([0, 0, 1]) # light direction, into the frame
         for f in self.parser.faces:
             f_canvas = []  # face coordinates to draw on canvas
             n = f.normal  # compute normal vector of face
@@ -53,18 +59,29 @@ class WireframeRenderer:
                 self.canvas.drawpoly(f_canvas, fill=colors.color_grad(colors.WHITE, I))
         
         self.canvas.verticalFlip()
-        self.canvas.save(outfile)
-        self.canvas.show()
-        self.canvas.close()
+        return self.canvas
 
 
 if __name__ == '__main__':
-    mode = 'wireframe'
-    inpath = '../examples/bunny.obj'
-    outpath = '../images/bunny_{}.png'.format(mode)
+    mode = 'triangle'
+    obj = 'bunny'
+    inpath = '../examples/{}.obj'.format(obj)
+    outpath = '../images/{}_{}.png'.format(obj, mode)
     wf = WireframeRenderer()
     wf.readfile(inpath)
-    wf.render(mode, outpath)
 
+    im_list = []
+    for i in range(72):
+        r = 100
+        theta = 5 * i
+        rad = np.pi * theta / 180
+        camera = [r * np.cos(rad), 0, r * np.sin(rad)]
+        center = [0, 0, 0]
+        up = [0, 1, 0]
+
+        canvas = wf.render(mode, camera, center, up)
+        im_list.append(canvas.img)
+
+    im_list[0].save('render.gif', save_all=True, append_images=im_list[1:], duration=100, loop=0)
 
 

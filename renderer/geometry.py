@@ -20,6 +20,10 @@ class Vertex:
         return self._z
 
     @property
+    def c(self):
+        return self._c 
+    
+    @property
     def id(self):
         return self._id
     
@@ -30,6 +34,13 @@ class Vertex:
     @property
     def coor3D(self):
         return (self._x, self._y, self._z)
+    
+    def perspective2D(self, c):
+        """ 
+            c is the camera z position (in pixels).
+            Default use coor2D where c = inf.
+        """
+        return (self.x/(1-self.z/c), self.y/(1-self.z/c))
     
     def __sub__(self, v):
         return np.subtract(self.coor3D, v.coor3D)
@@ -65,6 +76,29 @@ class Face:
 
 def dist(t):
     return t[1] - t[0]
+
+def normalize(v):
+    norm = np.sqrt(np.sum(v ** 2)) + 1e-20
+    return v / norm
+
+def lookAt(camera, center, up):
+    camera = np.array(camera)
+    center = np.array(center)
+    up = np.array(up)
+
+    z = normalize(camera - center)
+    x = normalize(np.cross(up, z))
+    y = normalize(np.cross(z, x))
+
+    m_inv = np.eye(4)
+    tr = np.eye(4)
+    for i in range(3):
+        m_inv[0][i] = x[i]
+        m_inv[1][i] = y[i]
+        m_inv[2][i] = z[i]
+        tr[i][3] = -center[i]
+    return np.matmul(m_inv, tr)
+
 
 if __name__ == '__main__':
     v = Vertex(0, 0, 0, 0)
