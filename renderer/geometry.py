@@ -33,14 +33,11 @@ class Vertex:
     
     def __sub__(self, v):
         return np.subtract(self.coor3D, v.coor3D)
-    
 
-class Vector3D:
-    def __init__(self, v1, v2):
-        self.v1 = v1
-        self.v2 = v2
 
 class Face:
+    _vertices = None
+
     def __init__(self, vids):
         self._vids = vids
     
@@ -48,10 +45,16 @@ class Face:
     def vids(self):
         return self._vids
     
-    def normal(self, vertices):
-        v0 = vertices[self._vids[0]]
-        v1 = vertices[self._vids[1]]
-        v2 = vertices[self._vids[2]]
+    @property
+    def zmean(self):
+        """ Simple wrap-around for painter's algorithm """
+        return np.mean([self._vertices[vid].z for vid in self._vids])
+    
+    @property
+    def normal(self):
+        v0 = self._vertices[self._vids[0]]
+        v1 = self._vertices[self._vids[1]]
+        v2 = self._vertices[self._vids[2]]
 
         l0 = v1 - v0
         l1 = v2 - v0

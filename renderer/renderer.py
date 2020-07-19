@@ -38,22 +38,21 @@ class WireframeRenderer:
         
         light_dir = np.array([0, 0, 1]) # light direction
         for f in self.parser.faces:
-            f_canvas = []
-            n = f.normal(self.parser.vertices)
-            I = np.dot(n, light_dir) # color intensity of polygons
+            f_canvas = []  # face coordinates to draw on canvas
+            n = f.normal  # compute normal vector of face
+            I = np.dot(n, light_dir)  # compute color intensity of polygons
             for vid in f.vids:
-                x, y = self.parser.vertices[vid].coor2D # world coordinates
-                x_canvas = self.rescale(x, self.parser.x_range) # canvas coordinates
+                x, y = self.parser.vertices[vid].coor2D  # world coordinates
+                x_canvas = self.rescale(x, self.parser.x_range)  # transform to canvas coordinates
                 y_canvas = self.rescale(y, self.parser.y_range)
                 f_canvas.append((x_canvas, y_canvas))
-            if I > 0: # surface normal is same as light direction
-                self.canvas.drawpoly(f_canvas, fill=colors.color_grad(colors.WHITE, I))
+            self.canvas.drawpoly(f_canvas, fill=colors.color_grad(colors.WHITE, I))
         self.canvas.show()
         print(self.canvas.size)
 
 
 if __name__ == '__main__':
-    path = '../examples/head.obj'
+    path = '../examples/bunny.obj'
     wf = WireframeRenderer()
     wf.render(path)
 

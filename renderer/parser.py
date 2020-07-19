@@ -25,9 +25,11 @@ class WireframeParser:
                     self._min_x, self._max_x = min(self._min_x, v.x), max(self._max_x, v.x)
                     self._min_y, self._max_y = min(self._min_y, v.y), max(self._max_y, v.y)
                 elif line[0] == 'f':
+                    Face._vertices = self._vertices
                     vs = [int(v.split('/')[0]) for v in line[1:]]
                     f = Face(vs)
                     self._faces.append(f)
+        self.faces.sort(key = lambda f: f.zmean)
     
     @property
     def vertices(self):
