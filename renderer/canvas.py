@@ -16,9 +16,17 @@ class WireframeCanvas:
     def drawpoly(self, coors, fill):
         self.draw.polygon(coors, fill=fill)
     
-    def show(self):
+    def verticalFlip(self):
         self.img = ImageOps.flip(self.img)
+
+    def show(self):
         self.img.show()
+    
+    def save(self, path):
+        self.img.save(path)
+    
+    def close(self):
+        self.img.close()
     
     @property
     def size(self):

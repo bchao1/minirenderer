@@ -9,7 +9,7 @@ class WireframeRenderer:
     def __init__(self,
         imsize=1000,
         fg_color=colors.WHITE,
-        bg_color=colors.BLACK,
+        bg_color=colors.WHITE,
     ):
         self.parser = WireframeParser()
 
@@ -47,8 +47,11 @@ class WireframeRenderer:
                 y_canvas = self.rescale(y, self.parser.y_range)
                 f_canvas.append((x_canvas, y_canvas))
             self.canvas.drawpoly(f_canvas, fill=colors.color_grad(colors.WHITE, I))
+        self.canvas.verticalFlip()
+        self.canvas.save('../images/bunny.png')
         self.canvas.show()
         print(self.canvas.size)
+        self.canvas.close()
 
 
 if __name__ == '__main__':
